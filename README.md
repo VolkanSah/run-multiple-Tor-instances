@@ -71,14 +71,10 @@ sudo systemctl status tor@hidden_service_2.service
 ```
 Retrieve the .onion addresses for your hidden services:
 ```bash
-    sudo cat /var/lib/tor/hidden_service_1/hostname
-    ```
-```bash
+sudo cat /var/lib/tor/hidden_service_1/hostname
 sudo cat /var/lib/tor/hidden_service_2/hostname
 ```
 
-rust
-
 Note the .onion addresses for each hidden service, as you will use them to access the respective services.
 
-Now you have multiple Tor instances running with different torrc files, each hosting a separate hidden service. To access each hidden service, use the Tor Browser and navigate to the corresponding .onion address obtained in step 13.
+Now you have multiple Tor instances running with different torrc files, each hosting a separate hidden service. To access each hidden service, use the Tor Browser and navigate to the corresponding .onion address obtained in step befor
