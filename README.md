@@ -1,4 +1,5 @@
-# Run multiple Tor instances with different configuration files (torrc) to host different hidden services on the same machine. 
+# Run multiple Tor instances with different configuration files (torrc) 
+to host different hidden services on the same machine. 
 Make sure you have the Tor service installed.
 - Create a new directory for each hidden service configuration:
 ```bash
