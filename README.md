@@ -1,6 +1,6 @@
-# multiple Tor instances for Hidden#_Tunnel (used to work with e.g, SoCat)
-Run multiple Tor instances with different configuration files (torrc) to host different hidden services on the same machine. 
-Make sure you have the Tor service installed.
+# Multiple Tor instances for Hidden_Tunnel (I used to work with e.g, SoCat)
+Run multiple Tor instances with different configuration files (torrc) to host different hidden services/tunnels on the same machine. 
+- Make sure you have the Tor service installed.
 - Create a new directory for each hidden service configuration:
 ```bash
 sudo mkdir -p /etc/tor/instances/hidden_service_1
@@ -78,4 +78,4 @@ sudo cat /var/lib/tor/hidden_service_2/hostname
 
 Note the .onion addresses for each hidden service, as you will use them to access the respective services.
 
-Now you have multiple Tor instances running with different torrc files, each hosting a separate hidden service. To access each hidden service, use the Tor Browser and navigate to the corresponding .onion address obtained in step befor
+Now you have multiple Tor instances running with different torrc files, each hosting a separate hidden service/tunnel
