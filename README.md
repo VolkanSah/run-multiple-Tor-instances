@@ -1,4 +1,5 @@
 # Multiple Tor instances for Hidden_Service/Tunnel 
+![Screenshot](more_onion.png)
 (I used to work with e.g, SoCat)
 Run multiple Tor instances with different configuration files (torrc) to host different hidden services/tunnels on the same machine. 
 - Make sure you have the Tor service installed.
