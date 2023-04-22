@@ -80,3 +80,5 @@ sudo cat /var/lib/tor/hidden_service_2/hostname
 Note the .onion addresses for each hidden service, as you will use them to access the respective services.
 
 Now you have multiple Tor instances running with different torrc files, each hosting a separate hidden service/tunnel
+## Credits
+S. Volkan Kücükbudak
