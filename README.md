@@ -18,7 +18,6 @@ Run multiple Tor instances with different configuration files (torrc) to host di
   - [8. Retrieve .onion Addresses](#8-retrieve-onion-addresses)
 - [Ethical Guidelines](#ethical-guidelines)
 - [Thank You](#thank-you)
-- [Credits](#credits)
 - [License](#license)
 
 ## Prerequisites
