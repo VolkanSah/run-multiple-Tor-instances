@@ -17,7 +17,6 @@ Run multiple Tor instances with different configuration files (torrc) to host di
   - [7. Check Service Status](#7-check-service-status)
   - [8. Retrieve .onion Addresses](#8-retrieve-onion-addresses)
 - [Ethical Guidelines](#ethical-guidelines)
-- [Thank You](#thank-you)
 - [License](#license)
 
 ## Prerequisites
