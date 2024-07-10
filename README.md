@@ -76,7 +76,7 @@ Create a new systemd service file for each Tor instance:
 ```
 sudo nano /etc/systemd/system/tor@hidden_service_1.service
 sudo nano /etc/systemd/system/tor@hidden_service_2.service
----
+```
 Add the following content to each systemd service file, adjusting the `hidden_service_1` and `hidden_service_2` values as needed:
 ```
 [Unit]
