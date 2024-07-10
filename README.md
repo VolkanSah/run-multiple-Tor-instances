@@ -28,35 +28,35 @@ Make sure you have the Tor service installed on your system.
 ### 1. Install Tor Service
 
 Ensure Tor is installed on your system:
----
+```
 sudo apt-get install tor
----
+```
 
 ### 2. Create Configuration Directories
 
 Create a new directory for each hidden service configuration:
----
+```
 sudo mkdir -p /etc/tor/instances/hidden_service_1
 sudo mkdir -p /etc/tor/instances/hidden_service_2
----
+```
 Replace `hidden_service_1` and `hidden_service_2` with the desired names for your hidden services.
 
 ### 3. Create Configuration Files
 
 Create new configuration files for each hidden service:
----
+```
 sudo nano /etc/tor/instances/hidden_service_1/torrc
 sudo nano /etc/tor/instances/hidden_service_2/torrc
----
+```
 Add the following configuration to each torrc file, adjusting the `HiddenServiceDir` and `HiddenServicePort` values as needed:
----
+```
 RunAsDaemon 1
 DataDirectory /var/lib/tor/instances/hidden_service_1
 PidFile /var/run/tor/instances/hidden_service_1.pid
 SocksPort 0
 HiddenServiceDir /var/lib/tor/hidden_service_1/
 HiddenServicePort 80 127.0.0.1:8080
----
+```
 Replace `hidden_service_1` with the appropriate hidden service name, and adjust the `HiddenServicePort` value to point to the correct local address and port for the associated web service (e.g., Nginx reverse proxy listening on a different port for each hidden service).
 
 Save the changes and exit the editor.
@@ -64,21 +64,21 @@ Save the changes and exit the editor.
 ### 4. Set Up Directories and Permissions
 
 Create the required directories and set the correct ownership for the data directories:
----
+```
 sudo mkdir -p /var/lib/tor/instances/hidden_service_1
 sudo mkdir -p /var/lib/tor/instances/hidden_service_2
 sudo chown -R debian-tor:debian-tor /var/lib/tor/instances
----
+```
 
 ### 5. Create Systemd Service Files
 
 Create a new systemd service file for each Tor instance:
----
+```
 sudo nano /etc/systemd/system/tor@hidden_service_1.service
 sudo nano /etc/systemd/system/tor@hidden_service_2.service
 ---
 Add the following content to each systemd service file, adjusting the `hidden_service_1` and `hidden_service_2` values as needed:
----
+```
 [Unit]
 Description=Tor Hidden Service %I
 After=network.target
@@ -91,38 +91,38 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
----
+```
 Save the changes and exit the editor.
 
 ### 6. Reload Systemd and Start Services
 
 Reload the systemd configuration:
----
+```
 sudo systemctl daemon-reload
----
+```
 Enable and start the new Tor instances:
----
+```
 sudo systemctl enable tor@hidden_service_1.service
 sudo systemctl start tor@hidden_service_1.service
 sudo systemctl enable tor@hidden_service_2.service
 sudo systemctl start tor@hidden_service_2.service
----
+```
 
 ### 7. Check Service Status
 
 Check the status of the new Tor instances to ensure they are running correctly:
----
+```
 sudo systemctl status tor@hidden_service_1.service
 sudo systemctl status tor@hidden_service_2.service
----
+```
 
 ### 8. Retrieve .onion Addresses
 
 Retrieve the .onion addresses for your hidden services:
----
+```
 sudo cat /var/lib/tor/hidden_service_1/hostname
 sudo cat /var/lib/tor/hidden_service_2/hostname
----
+```
 
 Note the .onion addresses for each hidden service, as you will use them to access the respective services.
 
