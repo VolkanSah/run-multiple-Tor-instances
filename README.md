@@ -56,7 +56,7 @@ PidFile /var/run/tor/instances/hidden_service_1.pid
 SocksPort 0 
 ExitRelay 0  
 HiddenServiceDir /var/lib/tor/hidden_service_1/
-HiddenServicePort 80 127.0.0.1:8080
+HiddenServicePort 80 127.0.0.1:9000
 ```
 
 ```
@@ -66,7 +66,7 @@ PidFile /var/run/tor/instances/hidden_service_2.pid
 SocksPort 0 
 ExitRelay 0  
 HiddenServiceDir /var/lib/tor/hidden_service_2/
-HiddenServicePort 80 127.0.0.1:8080
+HiddenServicePort 80 127.0.0.1:9001
 ```
 Replace `hidden_service_1` with the appropriate hidden service name, and adjust the `HiddenServicePort` value to point to the correct local address and port for the associated web service (e.g., Nginx reverse proxy listening on a different port for each hidden service).
 
