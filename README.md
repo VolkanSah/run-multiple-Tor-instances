@@ -277,7 +277,7 @@ If this helped you:
 
 * ⭐ the repo
 * Share it
-* Visit [Volkan Sah GitHub](https://github.com/volkansah)
+* Visit [Volkan Sah](https://github.com/volkansah)
 * [Support via GitHub Sponsors](https://github.com/sponsors/volkansah)
 
 ---
