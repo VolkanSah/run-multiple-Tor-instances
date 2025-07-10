@@ -46,6 +46,7 @@ because the one-`torrc`-to-rule-them-all method is fine, until it’s not.
 - Tor installed (`sudo apt install tor`)
 - Apache2 (LAMP) installed and running
 - Basic Linux command-line knowledge
+- Secure your Server befor, or pay me!
 
 
 ## Setup Instructions
