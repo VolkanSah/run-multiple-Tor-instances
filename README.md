@@ -288,6 +288,8 @@ MIT License — see LICENSE file.
 
 ---
 
-**Credits:** Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥 Image crafting by Google Gemini, brought to life by human creativity
+**Credits:** 
+- Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
+-Cover-Image crafting by Google Gemini, brought to life by human creativity
 
 
