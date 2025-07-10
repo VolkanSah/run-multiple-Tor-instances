@@ -18,37 +18,35 @@ because the one-`torrc`-to-rule-them-all method is fine, until it’s not.
 
 > Build it like a Batmobile: fast, stealthy, unstoppable.
 
-
 ![Tor Logo](https://upload.wikimedia.org/wikipedia/commons/1/15/Tor-logo-2011-flat.svg)
 
 ---
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)
-2. [Setup Instructions](#setup-instructions)
-
-   1. [Install Tor](#1-install-tor)
-   2. [Create Config & Data Directories](#2-create-config--data-directories)
-   3. [Write Tor Config Files](#3-write-tor-config-files)
-   4. [Set Permissions](#4-set-permissions)
-   5. [Create Systemd Service Files](#5-create-systemd-service-files)
-   6. [Enable and Start Services](#6-enable-and-start-services)
-   7. [Verify Services](#7-verify-services)
-   8. [Get .onion Addresses](#8-get-onion-addresses)
-3. [Configure Apache VirtualHosts](#9-configure-apache-virtualhosts)
-4. [Cleanup & Reset](#cleanup--reset)
-5. [Ethical Use](#ethical-use)
-6. [Support](#support)
+1. [Prerequisites](#prerequisites)  
+2. [Setup Instructions](#setup-instructions)  
+   1. [Install Tor](#1-install-tor)  
+   2. [Create Config & Data Directories](#2-create-config--data-directories)  
+   3. [Write Tor Config Files](#3-write-tor-config-files)  
+   4. [Set Permissions](#4-set-permissions)  
+   5. [Create Systemd Service Files](#5-create-systemd-service-files)  
+   6. [Enable and Start Services](#6-enable-and-start-services)  
+   7. [Verify Services](#7-verify-services)  
+   8. [Get .onion Addresses](#8-get-onion-addresses)  
+3. [Configure Apache VirtualHosts](#9-configure-apache-virtualhosts)  
+4. [Cleanup & Reset](#cleanup--reset)  
+5. [Ethical Use](#ethical-use)  
+6. [Support](#support)  
 7. [License](#license)
 
 ---
 
 ## Prerequisites
 
-* Tor installed (`sudo apt-get install tor` or equivalent)
-* Apache2 (LAMP) installed and running
-* Basic Linux command-line knowledge
+- Tor installed (`sudo apt install tor`)
+- Apache2 (LAMP) installed and running
+- Basic Linux command-line knowledge
 
 ---
 
@@ -57,9 +55,9 @@ because the one-`torrc`-to-rule-them-all method is fine, until it’s not.
 ### 1. Install Tor
 
 ```bash
-sudo apt-get update
-sudo apt-get install tor
-```
+sudo apt update
+sudo apt install tor
+````
 
 ### 2. Create Config & Data Directories
 
@@ -72,7 +70,7 @@ sudo mkdir -p /var/lib/tor/instances/hidden_service_2/hidden_service
 
 ### 3. Write Tor Config Files
 
-Create `/etc/tor/instances/hidden_service_1/torrc`:
+**`/etc/tor/instances/hidden_service_1/torrc`**:
 
 ```ini
 RunAsDaemon 0
@@ -85,7 +83,7 @@ HiddenServicePort 80 127.0.0.1:9000
 Log notice syslog
 ```
 
-Create `/etc/tor/instances/hidden_service_2/torrc`:
+**`/etc/tor/instances/hidden_service_2/torrc`**:
 
 ```ini
 RunAsDaemon 0
@@ -112,7 +110,8 @@ sudo chown -R debian-tor:debian-tor /run/tor/instances
 
 ### 5. Create Systemd Service Files
 
-Create `/etc/systemd/system/tor@hidden_service_1.service` and `/etc/systemd/system/tor@hidden_service_2.service` with:
+**`/etc/systemd/system/tor@hidden_service_1.service`**
+**`/etc/systemd/system/tor@hidden_service_2.service`**
 
 ```ini
 [Unit]
@@ -153,7 +152,7 @@ sudo systemctl status tor@hidden_service_1.service
 sudo systemctl status tor@hidden_service_2.service
 ```
 
-For live logs:
+Or live logs:
 
 ```bash
 journalctl -u tor@hidden_service_1.service -f
@@ -171,91 +170,96 @@ sudo cat /var/lib/tor/instances/hidden_service_2/hidden_service/hostname
 
 ## 9. Configure Apache VirtualHosts
 
-1. **Open Ports** in `/etc/apache2/ports.conf`:
+### 1. Open Ports
 
-   ```
-   Listen 9000
-   Listen 9001
-   ```
+Edit `/etc/apache2/ports.conf`:
 
-2. **Create Directories**:
+```apache
+Listen 9000
+Listen 9001
+```
 
-   ```bash
-   sudo mkdir -p /var/www/html/hidden_service_1
-   sudo mkdir -p /var/www/html/hidden_service_2
-   ```
+### 2. Create Web Directories
 
-3. **Create VirtualHost Files**:
+```bash
+sudo mkdir -p /var/www/html/hidden_service_1
+sudo mkdir -p /var/www/html/hidden_service_2
+```
 
-   * `/etc/apache2/sites-available/hidden_service_1.conf`:
+### 3. Create VirtualHost Files
 
-     ```apache
-     <VirtualHost *:9000>
-       DocumentRoot /var/www/html/hidden_service_1
-       <Directory /var/www/html/hidden_service_1>
-         Require all granted
-       </Directory>
-     </VirtualHost>
-     ```
-   * `/etc/apache2/sites-available/hidden_service_2.conf`:
+**`/etc/apache2/sites-available/hidden_service_1.conf`**:
 
-     ```apache
-     <VirtualHost *:9001>
-       DocumentRoot /var/www/html/hidden_service_2
-       <Directory /var/www/html/hidden_service_2>
-         Require all granted
-       </Directory>
-     </VirtualHost>
-     ```
+```apache
+<VirtualHost *:9000>
+  DocumentRoot /var/www/html/hidden_service_1
+  <Directory /var/www/html/hidden_service_1>
+    Require all granted
+  </Directory>
+</VirtualHost>
+```
 
-4. **Enable & Restart Apache**:
+**`/etc/apache2/sites-available/hidden_service_2.conf`**:
+
+```apache
+<VirtualHost *:9001>
+  DocumentRoot /var/www/html/hidden_service_2
+  <Directory /var/www/html/hidden_service_2>
+    Require all granted
+  </Directory>
+</VirtualHost>
+```
+
+### 4. Enable Sites & Restart Apache
+
+```bash
+sudo a2ensite hidden_service_1.conf
+sudo a2ensite hidden_service_2.conf
+sudo systemctl restart apache2
+```
+or (optional)
 
 ```bash
 sudo a2ensite hidden_service_1 hidden_service_2
 sudo systemctl restart apache2
 ```
 
-5. **Set Permissions**:
+### 5. Set Permissions
 
 ```bash
 sudo chown -R www-data:debian-tor /var/www/html/hidden_service_*
-sudo chmod -R 750             /var/www/html/hidden_service_*
+sudo chmod -R 750 /var/www/html/hidden_service_*
 ```
 
-6. **Restart Tor**:
+### 6. Restart Tor
 
 ```bash
 sudo systemctl restart tor@hidden_service_1
 sudo systemctl restart tor@hidden_service_2
 ```
 
-7. **Test in Tor Browser** by visiting your .onion URLs.
-
-If you encounter errors, check the last 20 lines of the log:
-
-```bash
-journalctl -u tor@hidden_service_1.service -n20 --no-pager
-```
-
 ---
 
 ## Cleanup & Reset
 
-If you need to wipe everything and start fresh:
-
 ```bash
 sudo systemctl stop tor@hidden_service_1.service tor@hidden_service_2.service
 sudo systemctl disable tor@hidden_service_1.service tor@hidden_service_2.service
+
 sudo rm -rf /etc/tor/instances/hidden_service_1
 sudo rm -rf /etc/tor/instances/hidden_service_2
 sudo rm -rf /var/lib/tor/instances/hidden_service_1
 sudo rm -rf /var/lib/tor/instances/hidden_service_2
 sudo rm -rf /run/tor/instances/hidden_service_1
 sudo rm -rf /run/tor/instances/hidden_service_2
+
 sudo rm /etc/systemd/system/tor@hidden_service_1.service
 sudo rm /etc/systemd/system/tor@hidden_service_2.service
+
 sudo systemctl daemon-reload
-sudo apt-get purge --auto-remove tor
+
+# Optional full uninstall
+sudo apt purge --auto-remove tor
 sudo rm -rf /etc/tor /var/lib/tor /var/log/tor
 ```
 
@@ -263,16 +267,19 @@ sudo rm -rf /etc/tor /var/lib/tor /var/log/tor
 
 ## Ethical Use
 
-Use responsibly and legally. No hacking or attacks. Only research, education, or authorized testing.
+Use responsibly and legally.
+This project is for research, learning, privacy protection, and legal penetration testing.
 
 ---
 
 ## Support
 
-If this helps, ⭐ the repo and share! More cool stuff here:
+If this helped you:
 
-* [Volkan Sah GitHub](https://github.com/volkansah)
-* [GitHub Sponsors](https://github.com/sponsors/volkansah)
+* ⭐ the repo
+* Share it
+* Visit [Volkan Sah GitHub](https://github.com/volkansah)
+* [Support via GitHub Sponsors](https://github.com/sponsors/volkansah)
 
 ---
 
@@ -283,3 +290,5 @@ MIT License — see LICENSE file.
 ---
 
 **Credits:** Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
+
+
