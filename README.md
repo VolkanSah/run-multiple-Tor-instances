@@ -1,3 +1,4 @@
+
 # Multiple Tor Instances for Hidden Services
 
 ![Tor Logo](https://upload.wikimedia.org/wikipedia/commons/1/15/Tor-logo-2011-flat.svg)
@@ -37,7 +38,7 @@ Run multiple Tor instances with separate configs to host different hidden servic
 ```bash
 sudo apt-get update
 sudo apt-get install tor
-```
+````
 
 ### 2. Create Config & Data Directories
 
@@ -45,8 +46,8 @@ sudo apt-get install tor
 sudo mkdir -p /etc/tor/instances/hidden_service_1
 sudo mkdir -p /etc/tor/instances/hidden_service_2
 
-sudo mkdir -p /var/lib/tor/instances/hidden_service_1
-sudo mkdir -p /var/lib/tor/instances/hidden_service_2
+sudo mkdir -p /var/lib/tor/instances/hidden_service_1/hidden_service
+sudo mkdir -p /var/lib/tor/instances/hidden_service_2/hidden_service
 ```
 
 ### 3. Write Tor Config Files
@@ -54,6 +55,7 @@ sudo mkdir -p /var/lib/tor/instances/hidden_service_2
 Create `/etc/tor/instances/hidden_service_1/torrc` with:
 
 ```ini
+RunAsDaemon 0
 DataDirectory /var/lib/tor/instances/hidden_service_1
 PidFile /run/tor/instances/hidden_service_1.pid
 SocksPort 0
@@ -66,6 +68,7 @@ Log notice syslog
 Create `/etc/tor/instances/hidden_service_2/torrc` with:
 
 ```ini
+RunAsDaemon 0
 DataDirectory /var/lib/tor/instances/hidden_service_2
 PidFile /run/tor/instances/hidden_service_2.pid
 SocksPort 0
@@ -85,23 +88,24 @@ sudo chmod 700 /var/lib/tor/instances/hidden_service_2
 
 ### 5. Create Systemd Service Files
 
-For each instance, create `/etc/systemd/system/tor@hidden_service_1.service` and `/etc/systemd/system/tor@hidden_service_2.service` with:
+Create `/etc/systemd/system/tor@hidden_service_1.service` and `/etc/systemd/system/tor@hidden_service_2.service` with:
 
 ```ini
 [Unit]
-Description=Tor Hidden Service %I
+Description=Tor Hidden Service %i
 After=network.target
 
 [Service]
 User=debian-tor
-Type=notify
-ExecStart=/usr/sbin/tor -f /etc/tor/instances/%I/torrc
+Type=simple
+ExecStart=/usr/sbin/tor -f /etc/tor/instances/%i/torrc
 Restart=on-failure
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=yes
+ReadWritePaths=/var/lib/tor/instances/%i
 
 [Install]
 WantedBy=multi-user.target
@@ -123,7 +127,7 @@ sudo systemctl status tor@hidden_service_1.service
 sudo systemctl status tor@hidden_service_2.service
 ```
 
-Check logs for errors:
+For live logs:
 
 ```bash
 journalctl -u tor@hidden_service_1.service -f
@@ -132,34 +136,62 @@ journalctl -u tor@hidden_service_2.service -f
 
 ### 8. Get .onion Addresses
 
-Once running, the onion address is in:
+Once running, find your onion URLs here:
 
 ```bash
 sudo cat /var/lib/tor/instances/hidden_service_1/hidden_service/hostname
 sudo cat /var/lib/tor/instances/hidden_service_2/hidden_service/hostname
 ```
 
+
+
+
+## Oops, you bricked it again?
+
+No worries, it happens to the best of us. Here’s how to clean up your mess and start fresh:
+
+```bash
+sudo systemctl stop tor@hidden_service_1.service tor@hidden_service_2.service
+sudo systemctl disable tor@hidden_service_1.service tor@hidden_service_2.service
+
+sudo rm -rf /etc/tor/instances/hidden_service_1
+sudo rm -rf /etc/tor/instances/hidden_service_2
+
+sudo rm -rf /var/lib/tor/instances/hidden_service_1
+sudo rm -rf /var/lib/tor/instances/hidden_service_2
+
+sudo rm /etc/systemd/system/tor@hidden_service_1.service
+sudo rm /etc/systemd/system/tor@hidden_service_2.service
+
+sudo systemctl daemon-reload
+
+echo "Cleanup complete. Now you can start fresh!"
+```
+
 ---
 
 ## Ethical Use
 
-Use this setup responsibly and legally. Don’t hack, attack, or annoy anyone. Only for research, learning, or authorized testing.
+Use responsibly and legally. No hacking or attacks. Only research, education, or authorized testing.
 
 ---
 
 ## Support
 
-If this helps you, drop a ⭐ on my GitHub and share!
-More of my stuff here: [Volkan Sah GitHub](https://github.com/volkansah)
-Support me if you like: [GitHub Sponsors](https://github.com/sponsors/volkansah)
+If this helps, ⭐ the repo and share!
+More cool stuff here: [Volkan Sah GitHub](https://github.com/volkansah)
+Support me: [GitHub Sponsors](https://github.com/sponsors/volkansah)
 
 ---
 
 ## License
 
-
+MIT License — see LICENSE file.
 
 ---
 
-**Credits:** Built with help from ChatGPT, powered by Batman's eternal hustle.
+**Credits:** Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
+
+
+
 
