@@ -1,6 +1,7 @@
 # Multiple Isolated Tor Instances for Hidden Services
 
 ![Tor Logo](https://upload.wikimedia.org/wikipedia/commons/1/15/Tor-logo-2011-flat.svg)
+
 Tor is awesome — but let’s be real: sometimes it drives you *absolutely insane*.  
 So instead of jamming all your hidden services into one massive `torrc` file and hoping for the best, we go the clean route:
 
