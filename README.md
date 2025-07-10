@@ -20,8 +20,6 @@ because the one-`torrc`-to-rule-them-all method is fine, until it’s not.
 > Build it like a Batmobile: fast, stealthy, unstoppable.
 
 
----
-
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)  
@@ -48,7 +46,6 @@ because the one-`torrc`-to-rule-them-all method is fine, until it’s not.
 - Apache2 (LAMP) installed and running
 - Basic Linux command-line knowledge
 
----
 
 ## Setup Instructions
 
@@ -166,7 +163,7 @@ sudo cat /var/lib/tor/instances/hidden_service_1/hidden_service/hostname
 sudo cat /var/lib/tor/instances/hidden_service_2/hidden_service/hostname
 ```
 
----
+
 
 ## 9. Configure Apache VirtualHosts
 
