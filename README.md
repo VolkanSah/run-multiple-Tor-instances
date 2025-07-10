@@ -144,6 +144,75 @@ sudo cat /var/lib/tor/instances/hidden_service_1/hidden_service/hostname
 sudo cat /var/lib/tor/instances/hidden_service_2/hidden_service/hostname
 ```
 
+# 9. Setting up 
+
+1. **Ports frei­geben**
+   In `/etc/apache2/ports.conf` ergänzen:
+
+   ```
+   Listen 9000
+   Listen 9001
+   ```
+
+2. **VirtualHosts anlegen**
+   **/etc/apache2/sites-available/hidden1.conf**
+   
+   Ordner erstellen mkdir /var/www/html/hiddne_service_1
+
+   ```apache
+   <VirtualHost *:9000>
+     DocumentRoot /var/www/html/hiddne_service_1
+     <Directory /var/www/html/hiddne_service_1>
+       Require all granted
+     </Directory>
+   </VirtualHost>
+   ```
+
+   **/etc/apache2/sites-available/hidden2.conf**
+   
+     Ordner erstellen mkdir /var/www/html/hiddne_service_1
+
+   ```apache
+   <VirtualHost *:9001>
+     DocumentRoot /var/www/html/hiddne_service_2
+     <Directory /var/www/html/hiddne_service_2>
+       Require all granted
+     </Directory>
+   </VirtualHost>
+   ```
+
+4. **Aktivieren & neustarten**
+
+   ```bash
+   sudo a2ensite hidden1 hidden2
+   sudo systemctl restart apache2
+   ```
+
+5. **Berechtigungen**
+
+   ```bash
+   sudo chown -R www-data:debian-tor /var/www/html/hiddne_service_*
+   sudo chmod -R 750               /var/www/html/hiddne_service_*
+   ```
+
+6. **Tor neu starten**
+
+   ```bash
+   sudo systemctl restart tor@hidden_service_1
+   sudo systemctl restart tor@hidden_service_2
+   ```
+
+7. **Test**
+   .onion im Tor‑Browser öffnen.
+   Bei Krach:
+
+   ```bash
+   journalctl -u tor@hidden_service_1.service -n10 --no-pager
+   ```
+
+   Kopier die Fehlermeldungen hierher – wir knacken das! 🦇
+
+
 
 
 
