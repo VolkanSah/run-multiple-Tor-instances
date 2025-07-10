@@ -54,6 +54,11 @@ ExitRelay 0
 
 ### 3. Systemd Service Setup
 Create service files (`/etc/systemd/system/tor@.service`):
+
+```
+sudo nano /etc/systemd/system/tor@hidden_service_1.service
+sudo nano /etc/systemd/system/tor@hidden_service_2.service
+```
 ```ini
 [Unit]
 Description=Tor Hidden Service %I
