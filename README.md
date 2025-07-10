@@ -61,7 +61,7 @@ Create `/etc/tor/instances/hidden_service_1/torrc`:
 ```ini
 RunAsDaemon 0
 DataDirectory /var/lib/tor/instances/hidden_service_1
-PidFile /run/tor/instances/hidden_service_1.pid
+PidFile /run/tor/instances/hidden_service_1/hidden_service_1.pid
 SocksPort 0
 ExitRelay 0
 HiddenServiceDir /var/lib/tor/instances/hidden_service_1/hidden_service/
@@ -74,7 +74,7 @@ Create `/etc/tor/instances/hidden_service_2/torrc`:
 ```ini
 RunAsDaemon 0
 DataDirectory /var/lib/tor/instances/hidden_service_2
-PidFile /run/tor/instances/hidden_service_2.pid
+PidFile /run/tor/instances/hidden_service_2/hidden_service_2.pid
 SocksPort 0
 ExitRelay 0
 HiddenServiceDir /var/lib/tor/instances/hidden_service_2/hidden_service/
@@ -89,6 +89,9 @@ sudo chown -R debian-tor:debian-tor /etc/tor/instances
 sudo chown -R debian-tor:debian-tor /var/lib/tor/instances
 sudo chmod 700 /var/lib/tor/instances/hidden_service_1/hidden_service
 sudo chmod 700 /var/lib/tor/instances/hidden_service_2/hidden_service
+sudo mkdir -p /run/tor/instances/hidden_service_1
+sudo mkdir -p /run/tor/instances/hidden_service_2
+sudo chown -R debian-tor:debian-tor /run/tor/instances
 ```
 
 ### 5. Create Systemd Service Files
@@ -110,7 +113,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/var/lib/tor/instances/%i
+ReadWritePaths=/var/lib/tor/instances/%i /run/tor/instances/%i
 RuntimeDirectory=tor/instances/%i
 RuntimeDirectoryMode=0750
 
@@ -121,6 +124,7 @@ WantedBy=multi-user.target
 ### 6. Enable and Start Services
 
 ```bash
+sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable --now tor@hidden_service_1.service
 sudo systemctl enable --now tor@hidden_service_2.service
@@ -211,10 +215,10 @@ sudo systemctl restart tor@hidden_service_2
 
 7. **Test in Tor Browser** by visiting your .onion URLs.
 
-If you encounter errors, check the last 10 lines of the log:
+If you encounter errors, check the last 20 lines of the log:
 
 ```bash
-journalctl -u tor@hidden_service_1.service -n10 --no-pager
+journalctl -u tor@hidden_service_1.service -n20 --no-pager
 ```
 
 ---
@@ -230,12 +234,13 @@ sudo rm -rf /etc/tor/instances/hidden_service_1
 sudo rm -rf /etc/tor/instances/hidden_service_2
 sudo rm -rf /var/lib/tor/instances/hidden_service_1
 sudo rm -rf /var/lib/tor/instances/hidden_service_2
+sudo rm -rf /run/tor/instances/hidden_service_1
+sudo rm -rf /run/tor/instances/hidden_service_2
 sudo rm /etc/systemd/system/tor@hidden_service_1.service
 sudo rm /etc/systemd/system/tor@hidden_service_2.service
 sudo systemctl daemon-reload
 sudo apt-get purge --auto-remove tor
 sudo rm -rf /etc/tor /var/lib/tor /var/log/tor
-echo "Cleanup complete. Start fresh whenever you’re ready!"
 ```
 
 ---
