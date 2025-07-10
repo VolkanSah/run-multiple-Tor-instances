@@ -165,7 +165,13 @@ sudo rm /etc/systemd/system/tor@hidden_service_2.service
 
 sudo systemctl daemon-reload
 
-echo "Cleanup complete. Now you can start fresh!"
+echo "Cleanup complete. Now you can start fresh! No? "
+echo "ByeBYe TOR "
+
+sudo apt-get purge --auto-remove tor
+sudo rm -rf /etc/tor
+sudo rm -rf /var/lib/tor
+sudo rm -rf /var/log/tor
 ```
 
 ---
