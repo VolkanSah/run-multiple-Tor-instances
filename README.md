@@ -41,6 +41,13 @@ sudo mkdir -p /etc/tor/instances/hidden_service_2
 ```
 Replace `hidden_service_1` and `hidden_service_2` with the desired names for your hidden services.
 
+Create Torfiles:
+
+```
+sudo mkdir -p /var/lib/tor/hidden_service_1
+sudo mkdir -p /var/lib/tor/hidden_service_2
+```
+
 ### 3. Create Configuration Files
 
 Create new configuration files for each hidden service:
