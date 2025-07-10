@@ -1,64 +1,92 @@
-
-# Multiple Tor Hidden Services Setup Guide
+# Multiple Tor Instances for Hidden Services
 
 ![Tor Logo](https://upload.wikimedia.org/wikipedia/commons/1/15/Tor-logo-2011-flat.svg)
 
-A comprehensive guide to setting up multiple Tor hidden services on a single system using separate configurations.
+Run multiple Tor instances with separate configs to host different hidden services on the same machine. Perfect for advanced setups or security testing.
+
+## Table of Contents
+
+* [Prerequisites](#prerequisites)
+* [Setup Instructions](#setup-instructions)
+
+  * [1. Install Tor](#1-install-tor)
+  * [2. Create Config & Data Directories](#2-create-config--data-directories)
+  * [3. Write Tor Config Files](#3-write-tor-config-files)
+  * [4. Set Permissions](#4-set-permissions)
+  * [5. Create Systemd Service Files](#5-create-systemd-service-files)
+  * [6. Enable and Start Services](#6-enable-and-start-services)
+  * [7. Verify Services](#7-verify-services)
+  * [8. Get .onion Addresses](#8-get-onion-addresses)
+* [Ethical Use](#ethical-use)
+* [Support](#support)
+* [License](#license)
+
+---
 
 ## Prerequisites
 
-- Linux system (Debian/Ubuntu recommended)
-- Tor service installed
-- Root/sudo access
-- Basic terminal knowledge
+* Tor installed (`sudo apt-get install tor` or equivalent)
+* Basic Linux command line knowledge
 
-## Installation
+---
 
-1. Install Tor:
+## Setup Instructions
+
+### 1. Install Tor
+
 ```bash
-sudo apt-get update && sudo apt-get install tor
+sudo apt-get update
+sudo apt-get install tor
 ```
 
-## Configuration
+### 2. Create Config & Data Directories
 
-### 1. Directory Setup
-Create configuration directories:
 ```bash
-sudo mkdir -p /etc/tor/instances/{hidden_service_1,hidden_service_2}
-sudo mkdir -p /var/lib/tor/{hidden_service_1,hidden_service_2}
-sudo chown -R debian-tor:debian-tor /var/lib/tor/hidden_service_*
+sudo mkdir -p /etc/tor/instances/hidden_service_1
+sudo mkdir -p /etc/tor/instances/hidden_service_2
+
+sudo mkdir -p /var/lib/tor/instances/hidden_service_1
+sudo mkdir -p /var/lib/tor/instances/hidden_service_2
 ```
 
-### 2. Service Configuration
-Create config files for each service:
+### 3. Write Tor Config Files
 
-`/etc/tor/instances/hidden_service_1/torrc`:
+Create `/etc/tor/instances/hidden_service_1/torrc` with:
+
 ```ini
-RunAsDaemon 1
-DataDirectory /var/lib/tor/hidden_service_1
-HiddenServiceDir /var/lib/tor/hidden_service_1/
-HiddenServicePort 80 127.0.0.1:8080
+DataDirectory /var/lib/tor/instances/hidden_service_1
+PidFile /run/tor/instances/hidden_service_1.pid
 SocksPort 0
 ExitRelay 0
+HiddenServiceDir /var/lib/tor/instances/hidden_service_1/hidden_service/
+HiddenServicePort 80 127.0.0.1:9000
+Log notice syslog
 ```
 
-`/etc/tor/instances/hidden_service_2/torrc`:
+Create `/etc/tor/instances/hidden_service_2/torrc` with:
+
 ```ini
-RunAsDaemon 1
-DataDirectory /var/lib/tor/hidden_service_2
-HiddenServiceDir /var/lib/tor/hidden_service_2/
-HiddenServicePort 80 127.0.0.1:8081  # Different port than service 1
+DataDirectory /var/lib/tor/instances/hidden_service_2
+PidFile /run/tor/instances/hidden_service_2.pid
 SocksPort 0
 ExitRelay 0
+HiddenServiceDir /var/lib/tor/instances/hidden_service_2/hidden_service/
+HiddenServicePort 80 127.0.0.1:9001
+Log notice syslog
 ```
 
-### 3. Systemd Service Setup
-Create service files (`/etc/systemd/system/tor@.service`):
+### 4. Set Permissions
 
+```bash
+sudo chown -R debian-tor:debian-tor /var/lib/tor/instances
+sudo chmod 700 /var/lib/tor/instances/hidden_service_1
+sudo chmod 700 /var/lib/tor/instances/hidden_service_2
 ```
-sudo nano /etc/systemd/system/tor@hidden_service_1.service
-sudo nano /etc/systemd/system/tor@hidden_service_2.service
-```
+
+### 5. Create Systemd Service Files
+
+For each instance, create `/etc/systemd/system/tor@hidden_service_1.service` and `/etc/systemd/system/tor@hidden_service_2.service` with:
+
 ```ini
 [Unit]
 Description=Tor Hidden Service %I
@@ -66,67 +94,72 @@ After=network.target
 
 [Service]
 User=debian-tor
-Type=simple
+Type=notify
 ExecStart=/usr/sbin/tor -f /etc/tor/instances/%I/torrc
 Restart=on-failure
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=yes
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-## Starting Services
+### 6. Enable and Start Services
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now tor@hidden_service_1
-sudo systemctl enable --now tor@hidden_service_2
+
+sudo systemctl enable --now tor@hidden_service_1.service
+sudo systemctl enable --now tor@hidden_service_2.service
 ```
 
-## Verification
+### 7. Verify Services
 
-1. Check service status:
 ```bash
-sudo systemctl status tor@hidden_service_1 tor@hidden_service_2
+sudo systemctl status tor@hidden_service_1.service
+sudo systemctl status tor@hidden_service_2.service
 ```
 
-2. View onion addresses:
+Check logs for errors:
+
 ```bash
-sudo cat /var/lib/tor/hidden_service_1/hostname
-sudo cat /var/lib/tor/hidden_service_2/hostname
+journalctl -u tor@hidden_service_1.service -f
+journalctl -u tor@hidden_service_2.service -f
 ```
 
-## Troubleshooting
+### 8. Get .onion Addresses
 
-### Common Issues
+Once running, the onion address is in:
 
-1. **Service fails to start**:
-   - Verify permissions: `sudo chown -R debian-tor:debian-tor /var/lib/tor/hidden_service_*`
-   - Check logs: `sudo journalctl -u tor@hidden_service_2 -n 50`
-
-2. **Missing hostname files**:
-   - Ensure directories exist and are writable
-   - Wait 1-2 minutes for Tor to generate addresses
-
-3. **Port conflicts**:
-   - Verify no other services are using ports 8080/8081: `sudo ss -tulnp | grep '8080\|8081'`
-
-4. **Configuration testing**:
 ```bash
-sudo -u debian-tor tor -f /etc/tor/instances/hidden_service_2/torrc --verify-config
+sudo cat /var/lib/tor/instances/hidden_service_1/hidden_service/hostname
+sudo cat /var/lib/tor/instances/hidden_service_2/hidden_service/hostname
 ```
 
-## Ethical Considerations
+---
 
-⚠️ **Important Notice**  
-This guide is provided for educational purposes only. Always:
-- Obtain proper authorization before testing
-- Comply with all applicable laws
-- Respect others' privacy
-- Use this knowledge responsibly
+## Ethical Use
 
-Unauthorized use of hidden services for malicious purposes is strictly prohibited.
+Use this setup responsibly and legally. Don’t hack, attack, or annoy anyone. Only for research, learning, or authorized testing.
+
+---
+
+## Support
+
+If this helps you, drop a ⭐ on my GitHub and share!
+More of my stuff here: [Volkan Sah GitHub](https://github.com/volkansah)
+Support me if you like: [GitHub Sponsors](https://github.com/sponsors/volkansah)
+
+---
 
 ## License
 
-[Creative Commons Zero v1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+
+
+---
+
+**Credits:** Built with help from ChatGPT, powered by Batman's eternal hustle.
 
