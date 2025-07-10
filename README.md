@@ -289,7 +289,8 @@ MIT License — see LICENSE file.
 ---
 
 **Credits:** 
-- Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
--Cover-Image crafting by Google Gemini, brought to life by human creativity
+- Mr.Chess alias Volan Sah
+- Readme.md Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
+- Social Preview-Image crafting by Google Gemini, brought to life by human creativity
 
 
