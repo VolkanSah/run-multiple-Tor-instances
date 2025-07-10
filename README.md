@@ -60,7 +60,7 @@ HiddenServicePort 80 127.0.0.1:8080
 ```
 
 ```
-RunAsDaemon 2
+RunAsDaemon 1
 DataDirectory /var/lib/tor/instances/hidden_service_2
 PidFile /var/run/tor/instances/hidden_service_2.pid
 SocksPort 0 
