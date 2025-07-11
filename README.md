@@ -277,7 +277,7 @@ If this helped you:
 
 * ⭐ the repo
 * Share it
-* Visit [Volkan Sah](https://github.com/volkansah)
+* Visit my Profile [Volkan Sah](https://github.com/volkansah) and follow me 😃
 * [Support via GitHub Sponsors](https://github.com/sponsors/volkansah)
 
 ---
@@ -289,8 +289,7 @@ MIT License — see LICENSE file.
 ---
 
 **Credits:** 
-- Mr.Chess alias Volan Sah
 - Readme.md Powered by Batman’s grind and ChatGPT wizardry. 🦇🔥
-- Social Preview-Image crafting by Google Gemini, brought to life by human creativity
+
 
 
